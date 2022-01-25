@@ -52,10 +52,10 @@ def register(message: str, wechat_id: str) -> str:
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
         handles.pop(old_handle)
-        logging.info(wechat_id, handle)
+        logging.info('wechat_id: %s, handle changed from "%s" to "%s".' % (wechat_id, old_handle, handle))
         return 'You changed your handle from "%s" to "%s".' % (old_handle, handle)
     else:
-        logging.info(wechat_id, handle)
+        logging.info('wechat_id %s with handle %s registered successfully.' % (wechat_id, handle))
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
         return 'Congratulations! You have registered successfully! Your handle is "%s".' % handle
