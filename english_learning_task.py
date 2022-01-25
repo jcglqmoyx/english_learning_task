@@ -64,7 +64,7 @@ def check_in(wechat_id: str, url: str) -> str:
     else:
         data[wechat_id].append([url, get_time()])
     count_record = len(data[wechat_id])
-    reply = '打卡记录: %d,\n链接: %s' % (count_record, url)
+    reply = '打卡记录: %d\n链接: %s\n' % (count_record, url)
     if count_record >= 3:
         reply += '你已完成今天的打卡任务。'
     return reply
