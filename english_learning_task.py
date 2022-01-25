@@ -89,10 +89,17 @@ def hello_world():
 
 @app.route('/unregister/<handle>')
 def unregister(handle):
-    handles.pop(handle)
+    flag = False
+    if handle in handles:
+        handles.pop(handle)
+        flag = True
     if handle in data:
         data.pop(handle)
-    return render_template('message.html', message='User "%s" deleted.' % handle, title='Delete user')
+    if flag:
+        message = 'User "%s" deleted.' % handle
+    else:
+        message = 'There is no user with handle %s.' % handle
+    return render_template('message.html', message=message, title='Delete user')
 
 
 @app.route('/users')
