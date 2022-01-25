@@ -111,6 +111,9 @@ def f():
                 records[handle] = t
             else:
                 lazy_people.append(handle)
+    for handle in handles:
+        if handle not in records:
+            lazy_people.append(handle)
     return render_template('record.html', records=records, lazy_people=lazy_people)
 
 
