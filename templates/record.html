@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="referrer" content="never" charset="UTF-8">
+    <title>打卡记录</title>
+    <link href="/static/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h2>打卡记录</h2>
+<table>
+    {% for handle, v in records.items() %}
+        <tr>
+            <td>{{ handle }}</td>
+            {% for record in v %}
+                <td><a href="{{ record }}">link</a></td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+<br>
+<h2>未完成打卡任务成员</h2>
+{% for handle in lazy_people %}
+    <p><b>{{ handle }}</b></p>
+{% endfor %}
+</body>
+</html>
