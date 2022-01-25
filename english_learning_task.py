@@ -98,24 +98,24 @@ def get_all_users():
 @app.route('/record')
 def f():
     records = {}
-    lazy_people = []
+    lazy_people = set()
     for wechat_id, v in data.items():
         handle = wechat_ids[wechat_id]
         if len(v) < 3:
-            lazy_people.append(handle)
+            lazy_people.add(handle)
         else:
             t = []
             for i in range(len(v) - 3, len(v)):
-                if '010000' <= v[i][1] <= '223000':
+                if '010000' <= v[i][1] <= '235000':
                     t.append(v[i][0])
-            if len(t) >= 3:
+            if len(t) == 3:
                 records[handle] = t
             else:
-                lazy_people.append(handle)
+                lazy_people.add(handle)
     for handle in handles:
         if handle not in records:
-            lazy_people.append(handle)
-    return render_template('record.html', records=records, lazy_people=lazy_people)
+            lazy_people.add(handle)
+    return render_template('record.html', records=records, lazy_people=list(lazy_people))
 
 
 @app.route('/wechat', methods=['GET', 'POST'])
