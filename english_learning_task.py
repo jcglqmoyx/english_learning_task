@@ -83,6 +83,7 @@ def hello_world():
 @app.route('/unregister/<handle>')
 def unregister(handle):
     handles.pop(handle)
+    data.pop(handle)
     return render_template('message.html', message='User "%s" deleted.' % handle, title='Delete user')
 
 
