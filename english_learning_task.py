@@ -1,17 +1,26 @@
 # import hashlib
+import datetime
 import time
 
 import xmltodict
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, render_template
+from flask_apscheduler import APScheduler
 from gevent import pywsgi
 
 from util import search, generate_verification_code, get_time
 
 app = Flask(__name__)
+scheduler = APScheduler(scheduler=BackgroundScheduler(timezone='Asia/Shanghai'))
 handles, wechat_ids = {}, {}
 verification_code = generate_verification_code()
 data = {}
 WECHAT_TOKEN = 'test'
+
+
+@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
+def clear_records():
+    data.clear()
 
 
 def register(message: str, wechat_id: str) -> str:
@@ -96,7 +105,7 @@ def f():
         else:
             t = []
             for i in range(len(v) - 3, len(v)):
-                if '000000' <= v[i][1] <= '230000':
+                if '000000' <= v[i][1] <= '223000':
                     t.append(v[i][0])
             if len(t) >= 3:
                 records[handle] = t
@@ -158,5 +167,7 @@ def wechat():
 
 
 if __name__ == '__main__':
+    scheduler.init_app(app)
+    scheduler.start()
     server = pywsgi.WSGIServer(('0.0.0.0', 8001), app)
     server.serve_forever()
