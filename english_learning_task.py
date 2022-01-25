@@ -105,7 +105,7 @@ def f():
         else:
             t = []
             for i in range(len(v) - 3, len(v)):
-                if '000000' <= v[i][1] <= '223000':
+                if '010000' <= v[i][1] <= '223000':
                     t.append(v[i][0])
             if len(t) >= 3:
                 records[handle] = t
