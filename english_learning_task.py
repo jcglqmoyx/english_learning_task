@@ -1,5 +1,5 @@
 # import hashlib
-import datetime
+import logging
 import time
 
 import xmltodict
@@ -12,9 +12,12 @@ from util import search, generate_verification_code, get_time
 
 app = Flask(__name__)
 scheduler = APScheduler(scheduler=BackgroundScheduler(timezone='Asia/Shanghai'))
+logging.basicConfig(filename='log.txt', datefmt='%d-%b-%y %H:%M:%S', format='%(asctime)s - %(message)s',
+                    level=logging.INFO)
 handles, wechat_ids = {}, {}
 verification_code = generate_verification_code()
 data = {}
+
 WECHAT_TOKEN = 'test'
 
 
@@ -49,14 +52,18 @@ def register(message: str, wechat_id: str) -> str:
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
         handles.pop(old_handle)
+        logging.info(wechat_id, handle)
         return 'You changed your handle from "%s" to "%s".' % (old_handle, handle)
     else:
+        logging.info(wechat_id, handle)
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
         return 'Congratulations! You have registered successfully! Your handle is "%s".' % handle
 
 
 def check_in(wechat_id: str, url: str) -> str:
+    if not '010000' <= get_time() <= '223000':
+        return '现在不是打卡时间。'
     if wechat_id not in wechat_ids:
         return 'You haven\'t registered yet. Please contact the administrator.'
     if wechat_id not in data:
@@ -83,7 +90,8 @@ def hello_world():
 @app.route('/unregister/<handle>')
 def unregister(handle):
     handles.pop(handle)
-    data.pop(handle)
+    if handle in data:
+        data.pop(handle)
     return render_template('message.html', message='User "%s" deleted.' % handle, title='Delete user')
 
 
@@ -96,7 +104,7 @@ def get_all_users():
 
 
 @app.route('/record')
-def f():
+def statistics():
     records = {}
     lazy_people = set()
     for wechat_id, v in data.items():
