@@ -36,9 +36,3 @@ def generate_verification_code() -> str:
     for i in range(10):
         code += s[rd(0, len(s) - 1)]
     return code
-
-
-def log(message: str) -> None:
-    file = open('log.txt', 'a')
-    file.write('%s%s %s\n\n' % (get_date(), get_time(), message))
-    file.close()

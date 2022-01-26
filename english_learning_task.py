@@ -8,7 +8,7 @@ from flask_apscheduler import APScheduler
 from gevent import pywsgi
 
 from db import *
-from util import search, generate_verification_code, get_time, log
+from util import search, generate_verification_code, get_time
 
 app = Flask(__name__)
 scheduler = APScheduler(scheduler=BackgroundScheduler(timezone='Asia/Shanghai'))
@@ -24,6 +24,7 @@ def init():
     users = get_all_users()
     print('..............')
     if not users:
+        print('no users')
         return
     for user in users:
         wechat_id, handle = user
@@ -65,10 +66,8 @@ def register(message: str, wechat_id: str) -> str:
         handles[handle] = wechat_id
         handles.pop(old_handle)
         update_user(wechat_id, handle)
-        log('wechat_id: %s, handle changed from "%s" to "%s".' % (wechat_id, old_handle, handle))
         return 'You changed your handle from "%s" to "%s".' % (old_handle, handle)
     else:
-        log('wechat_id %s with handle %s registered successfully.' % (wechat_id, handle))
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
         add_user(wechat_id, handle)

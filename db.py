@@ -32,9 +32,10 @@ def get_all_users():
     users = []
     db = pymysql.connect(host='localhost', user='root', password='Admin1', database='task', charset='utf8')
     cursor = db.cursor()
-    sql = 'select wechat_id, handle from member where is_active=true'
+    sql = 'select wechat_id, handle from member where is_active=True'
     cursor.execute(sql)
     res = cursor.fetchall()
     for record in res:
         users.append([record[0], record[1]])
     db.close()
+    return users
