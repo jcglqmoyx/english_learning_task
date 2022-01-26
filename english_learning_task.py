@@ -56,7 +56,7 @@ def register(message: str, wechat_id: str) -> str:
         return 'Handle should have a minimum length of 1. Try again.'
     if handle in handles:
         return 'Username "%s" already taken, Please use another username.' % handle
-    elif wechat_id in wechat_ids:
+    elif wechat_id in wechat_ids and wechat_ids[wechat_id] != handle:
         old_handle = wechat_ids[wechat_id]
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
@@ -100,11 +100,12 @@ def hello_world():
 def unregister(handle):
     flag = False
     if handle in handles:
+        wechat_id = handles[handle]
+        if wechat_id in data:
+            data.pop(wechat_id)
         remove_user(handle)
         handles.pop(handle)
         flag = True
-    if handle in data:
-        data.pop(handle)
     if flag:
         message = 'User "%s" deleted.' % handle
     else:
