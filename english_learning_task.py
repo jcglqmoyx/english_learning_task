@@ -22,16 +22,12 @@ WECHAT_TOKEN = 'test'
 
 def init():
     users = get_all_users()
-    print('..............')
     if not users:
-        print('no users')
         return
     for user in users:
         wechat_id, handle = user
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
-    print(handles)
-    print(wechat_ids)
 
 
 @scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
