@@ -7,15 +7,30 @@ from flask import Flask, request, render_template
 from flask_apscheduler import APScheduler
 from gevent import pywsgi
 
+from db import *
 from util import search, generate_verification_code, get_time, log
 
 app = Flask(__name__)
 scheduler = APScheduler(scheduler=BackgroundScheduler(timezone='Asia/Shanghai'))
+
 handles, wechat_ids = {}, {}
 verification_code = generate_verification_code()
 data = {}
 
 WECHAT_TOKEN = 'test'
+
+
+def init():
+    users = get_all_users()
+    print('..............')
+    if not users:
+        return
+    for user in users:
+        wechat_id, handle = user
+        wechat_ids[wechat_id] = handle
+        handles[handle] = wechat_id
+    print(handles)
+    print(wechat_ids)
 
 
 @scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
@@ -49,12 +64,14 @@ def register(message: str, wechat_id: str) -> str:
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
         handles.pop(old_handle)
+        update_user(wechat_id, handle)
         log('wechat_id: %s, handle changed from "%s" to "%s".' % (wechat_id, old_handle, handle))
         return 'You changed your handle from "%s" to "%s".' % (old_handle, handle)
     else:
         log('wechat_id %s with handle %s registered successfully.' % (wechat_id, handle))
         wechat_ids[wechat_id] = handle
         handles[handle] = wechat_id
+        add_user(wechat_id, handle)
         return 'Congratulations! You have registered successfully! Your handle is "%s".' % handle
 
 
@@ -88,6 +105,7 @@ def hello_world():
 def unregister(handle):
     flag = False
     if handle in handles:
+        remove_user(handle)
         handles.pop(handle)
         flag = True
     if handle in data:
@@ -100,7 +118,7 @@ def unregister(handle):
 
 
 @app.route('/users')
-def get_all_users():
+def show_all_users():
     users = []
     for handle, _ in handles.items():
         users.append(handle)
@@ -183,6 +201,7 @@ def wechat():
 
 
 if __name__ == '__main__':
+    init()
     scheduler.init_app(app)
     scheduler.start()
     server = pywsgi.WSGIServer(('0.0.0.0', 8001), app)
