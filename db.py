@@ -1,7 +1,7 @@
 import pymysql
 
 
-def reactivatable(wechat_id: str) -> bool:
+def reactivatable(wechat_id: str, handle: str) -> bool:
     db = pymysql.connect(host='localhost', user='root', password='Admin1', database='task', charset='utf8')
     cursor = db.cursor()
     sql = 'select wechat_id from member where wechat_id="%s"' % wechat_id
@@ -9,7 +9,7 @@ def reactivatable(wechat_id: str) -> bool:
     res = cursor.fetchone()
     flag = False
     if res:
-        cursor.execute('update member set is_active=true where wechat_id="%s"' % wechat_id)
+        cursor.execute('update member set is_active=true, handle="%s" where wechat_id="%s"' % (wechat_id, handle))
         flag = True
     db.commit()
     db.close()
@@ -26,7 +26,7 @@ def remove_user(handle: str) -> None:
 
 
 def add_user(wechat_id: str, handle: str) -> None:
-    if reactivatable(wechat_id):
+    if reactivatable(wechat_id, handle):
         return
     db = pymysql.connect(host='localhost', user='root', password='Admin1', database='task', charset='utf8')
     cursor = db.cursor()
