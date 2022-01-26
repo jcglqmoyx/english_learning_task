@@ -7,10 +7,13 @@ def reactivatable(wechat_id: str) -> bool:
     sql = 'select wechat_id from member where wechat_id="%s"' % wechat_id
     cursor.execute(sql)
     res = cursor.fetchone()
+    flag = False
     if res:
         cursor.execute('update member set is_active=true where wechat_id="%s"' % wechat_id)
+        flag = True
     db.commit()
     db.close()
+    return flag
 
 
 def remove_user(handle: str) -> None:
