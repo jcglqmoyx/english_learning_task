@@ -132,9 +132,9 @@ def show_all_users():
     return render_template('users.html', users=users)
 
 
-@app.route('/report')
-def get_report():
-    return render_template('report/%s.html' % get_date())
+@app.route('/report/<date>')
+def get_report(date: str):
+    return render_template('report/%s.html' % date)
 
 
 @app.route('/record')
