@@ -1,4 +1,5 @@
 # import hashlib
+import os
 import time
 
 import xmltodict
@@ -8,7 +9,7 @@ from flask_apscheduler import APScheduler
 from gevent import pywsgi
 
 from db import *
-from util import search, generate_verification_code, get_time
+from util import *
 
 app = Flask(__name__)
 scheduler = APScheduler(scheduler=BackgroundScheduler(timezone='Asia/Shanghai'))
@@ -19,8 +20,9 @@ data = {}
 
 WECHAT_TOKEN = 'test'
 
-BEGIN_TIME='010000'
-END_TIME='235999'
+BEGIN_TIME = '010000'
+END_TIME = '235959'
+
 
 def init():
     users = get_all_users()
@@ -35,6 +37,13 @@ def init():
 @scheduler.task('cron', id='timer', day='*', hour='1', minute='0', second='0')
 def clear_records():
     data.clear()
+
+
+@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
+def generate_report():
+    command1 = 'wget --output-document=%s.html huanhuacf.top/record'
+    command2 = 'mv %s.html templates/report/' % get_date()
+    os.system('%s && %s' % (command1, command2))
 
 
 def register(message: str, wechat_id: str) -> str:
@@ -73,7 +82,7 @@ def register(message: str, wechat_id: str) -> str:
 
 
 def check_in(wechat_id: str, url: str) -> str:
-    if not BEGIN_TIME <= get_time() <= END_TIME: 
+    if not BEGIN_TIME <= get_time() <= END_TIME:
         return '现在不是打卡时间。'
     if wechat_id not in wechat_ids:
         return 'You haven\'t registered yet. Please contact the administrator.'
@@ -123,6 +132,11 @@ def show_all_users():
     return render_template('users.html', users=users)
 
 
+@app.route('/report')
+def get_report():
+    return render_template('report/%s.html' % get_date())
+
+
 @app.route('/record')
 def statistics():
     records = {}
@@ -134,7 +148,7 @@ def statistics():
         else:
             t = []
             for i in range(len(v) - 3, len(v)):
-                if BEGIN_TIME <= v[i][1] <= END_TIME: 
+                if BEGIN_TIME <= v[i][1] <= END_TIME:
                     t.append(v[i][0])
             if len(t) == 3:
                 records[handle] = t
