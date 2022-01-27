@@ -19,6 +19,8 @@ data = {}
 
 WECHAT_TOKEN = 'test'
 
+BEGIN_TIME='010000'
+END_TIME='235999'
 
 def init():
     users = get_all_users()
@@ -30,7 +32,7 @@ def init():
         handles[handle] = wechat_id
 
 
-@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
+@scheduler.task('cron', id='timer', day='*', hour='1', minute='0', second='0')
 def clear_records():
     data.clear()
 
@@ -71,7 +73,7 @@ def register(message: str, wechat_id: str) -> str:
 
 
 def check_in(wechat_id: str, url: str) -> str:
-    if not '010000' <= get_time() <= '223000':
+    if not BEGIN_TIME <= get_time() <= END_TIME: 
         return '现在不是打卡时间。'
     if wechat_id not in wechat_ids:
         return 'You haven\'t registered yet. Please contact the administrator.'
@@ -132,7 +134,7 @@ def statistics():
         else:
             t = []
             for i in range(len(v) - 3, len(v)):
-                if '010000' <= v[i][1] <= '223000':
+                if BEGIN_TIME <= v[i][1] <= END_TIME: 
                     t.append(v[i][0])
             if len(t) == 3:
                 records[handle] = t
