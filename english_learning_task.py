@@ -39,7 +39,7 @@ def clear_records():
     data.clear()
 
 
-@scheduler.task('cron', id='timer', day='*', hour='0', minute='6', second='59')
+@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
 def generate_report():
     command1 = 'wget --output-document=%s.html huanhuacf.top/record' % get_date()
     command2 = 'mv %s.html templates/report/' % get_date()
