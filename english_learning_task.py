@@ -21,7 +21,7 @@ data = {}
 WECHAT_TOKEN = 'test'
 
 BEGIN_TIME = '010000'
-END_TIME = '235959'
+END_TIME = '235930'
 
 
 def init():
@@ -34,12 +34,12 @@ def init():
         handles[handle] = wechat_id
 
 
-@scheduler.task('cron', id='timer', day='*', hour='1', minute='0', second='0')
+@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
 def clear_records():
     data.clear()
 
 
-@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
+@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='30')
 def generate_report():
     command1 = 'wget --output-document=%s.html huanhuacf.top/record' % get_date()
     command2 = 'mv %s.html templates/report/' % get_date()
