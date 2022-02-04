@@ -6,7 +6,7 @@ from random import randint as rd
 def get_time() -> str:
     now = dt.now()
     h, m, s = now.hour, now.minute, now.second
-    return '%s%s%s' % (str(h), '{:0>2d}'.format(m), '{:0>2d}'.format(s))
+    return '%s%s%s' % ('{:0>2d}'.format(h), '{:0>2d}'.format(m), '{:0>2d}'.format(s))
 
 
 def get_date() -> str:
