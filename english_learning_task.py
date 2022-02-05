@@ -34,16 +34,12 @@ def init():
         handles[handle] = wechat_id
 
 
-@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='59')
-def clear_records():
-    data.clear()
-
-
-@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='30')
+@scheduler.task('cron', id='timer', day='*', hour='23', minute='59', second='50')
 def generate_report():
     command1 = 'wget --output-document=%s.html huanhuacf.top/record' % get_date()
     command2 = 'mv %s.html templates/report/' % get_date()
     os.system('%s && %s' % (command1, command2))
+    data.clear()
 
 
 def register(message: str, wechat_id: str) -> str:
@@ -182,8 +178,8 @@ def wechat():
     # else:
     #     return 'errno', 403
 
-    data = request.data
-    d = xmltodict.parse(data).get('xml')
+    data_received = request.data
+    d = xmltodict.parse(data_received).get('xml')
     message_type = d.get('MsgType')
     response = {
         "ToUserName": d.get('FromUserName'),
