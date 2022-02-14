@@ -20,7 +20,7 @@ data = {}
 
 WECHAT_TOKEN = 'test'
 
-BEGIN_TIME = '010000'
+BEGIN_TIME = '000000'
 END_TIME = '235930'
 
 
@@ -88,8 +88,8 @@ def check_in(wechat_id: str, url: str) -> str:
         data[wechat_id].append([url, get_time()])
     count_record = len(data[wechat_id])
     reply = '打卡记录: %d\n链接: %s\n' % (count_record, url)
-    if count_record >= 3:
-        reply += '你已完成今天的打卡任务。'
+    if count_record >= 2:
+        reply += '\n你已完成今天的打卡任务, 点击链接huanhuacf.top/record 可以查看你的打卡记录。如发现打卡记录不正常或发送了重复的图片，请重新把两张图片再发一下。\n\n%s' % os.popen('fortune').read()
     return reply
 
 
@@ -139,14 +139,14 @@ def statistics():
     lazy_people = set()
     for wechat_id, v in data.items():
         handle = wechat_ids[wechat_id]
-        if len(v) < 3:
+        if len(v) < 2:
             lazy_people.add(handle)
         else:
             t = []
-            for i in range(len(v) - 3, len(v)):
+            for i in range(len(v) - 2, len(v)):
                 if BEGIN_TIME <= v[i][1] <= END_TIME:
                     t.append(v[i][0])
-            if len(t) == 3:
+            if len(t) == 2:
                 records[handle] = t
             else:
                 lazy_people.add(handle)
